@@ -18,12 +18,13 @@ def animate(i, current, ser):
         data = ser.readline()
         print("Current level: " + data.decode('utf'))
         input_list = data.split()
-        current.append(float(input_list[1]))
+        if float(input_list[1]) > 0:
+            current.append(float(input_list[1]))
         
     
     ax.clear()  # clear the plot before drawing new data
     ax.plot(current)
-    ax.set_ylim(100, 0)
+    ax.set_ylim(0, 110)
     ax.set_xlim(len(current)-30, len(current)+30)
     
   
