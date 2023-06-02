@@ -1,5 +1,6 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <math.h>
 
 #define trigPin 7 //Sensor Echo pin connected to Arduino pin 13
 #define echoPin 6 //Sensor Trip pin connected to Arduino pin 12
@@ -7,7 +8,7 @@
 int t=0;
 char i = 0;
 float time, distance, initial=999;
-float arr[100];
+float arr[50];
 
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
@@ -54,26 +55,24 @@ void loop(void) {
 
   //pre-processing (taking avg)-----------------
   arr[i++]=time;
-  if (i==100) {i=0;}
+  if (i==50) {i=0;}
 
   time=0;
-  for (char j = 0; j < 100; j++) {
+  for (char j = 0; j < 50; j++) {
     time = time + arr[j];
   }  
-  time=time/100;
+  time=time/50;
   distance = (time/2) / 29.1;
 
 
 
   //output to terminal --------------------------
-  if (t==100) {
+  if (t==50) {
 
       if (distance < initial) {  initial = distance;}
 
-      distance = initial - distance;
+      distance = round(initial - distance)+100;
 
-      Serial.print("Distance: ");
-      Serial.print(distance); 
       t=0;
       printD();
 
@@ -82,7 +81,13 @@ void loop(void) {
 }
 
 void printD() {
-  
+
+  if (distance < 0) {
+    return;
+  }
+
+  Serial.print("Distance: ");
+  Serial.println(distance); 
   lcd.setCursor (0,0);
   lcd.print("    Level:    ");
   lcd.setCursor (0,1);
